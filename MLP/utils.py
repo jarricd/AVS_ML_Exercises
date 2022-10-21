@@ -1,7 +1,9 @@
+import numpy
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
+import torch
+import itertools
 
 def load_data(n_dim, mode: str = "LDA"):
     test_filenames = [f"test{i}.txt" for i in range(0, 10)]
@@ -23,8 +25,8 @@ def load_data(n_dim, mode: str = "LDA"):
 
     dataset_dict["train"] = np.concatenate(dataset_dict["train"])
     dataset_dict["test"] = np.concatenate(dataset_dict["test"])
-    class_dataset["train"] = np.concatenate(class_dataset["train"])
-    class_dataset["test"] = np.concatenate(class_dataset["test"])
+    class_dataset["train"] = torch.from_numpy(np.concatenate(class_dataset["train"])).type(torch.long)
+    class_dataset["test"] = torch.from_numpy(np.concatenate(class_dataset["test"])).type(torch.long)
     if mode == "LDA":
         lda_train = LinearDiscriminantAnalysis(n_components=n_dim)
         lda_train.fit(np.array(dataset_dict["train"]), class_dataset["train"])
@@ -33,8 +35,8 @@ def load_data(n_dim, mode: str = "LDA"):
         lda_test.fit(np.array(dataset_dict["test"]), class_dataset["test"])
         reduced_test = lda_test.transform(dataset_dict["test"])
 
-        dataset_dict["train"] = reduced_train
-        dataset_dict["test"] = reduced_test
+        dataset_dict["train"] = torch.from_numpy(reduced_train.astype(numpy.float32))
+        dataset_dict["test"] = torch.from_numpy(reduced_test.astype(numpy.float32))
     elif mode == "PCA":
         lda_train = PCA(n_components=n_dim)
         lda_train.fit(np.array(dataset_dict["train"]), class_dataset["train"])
@@ -43,8 +45,8 @@ def load_data(n_dim, mode: str = "LDA"):
         lda_test.fit(np.array(dataset_dict["test"]), class_dataset["test"])
         reduced_test = lda_test.transform(dataset_dict["test"])
 
-        dataset_dict["train"] = reduced_train
-        dataset_dict["test"] = reduced_test
+        dataset_dict["train"] = torch.from_numpy(reduced_train.astype(numpy.float32))
+        dataset_dict["test"] = torch.from_numpy(reduced_test.astype(numpy.float32))
     else:
         return {}, {}  # invalid mode
     return dataset_dict, class_dataset
