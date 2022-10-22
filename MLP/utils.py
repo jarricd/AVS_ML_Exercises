@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import torch
-import itertools
+import pickle
 
 def load_data(n_dim, mode: str = "LDA"):
     test_filenames = [f"test{i}.txt" for i in range(0, 10)]
@@ -50,3 +50,19 @@ def load_data(n_dim, mode: str = "LDA"):
     else:
         return {}, {}  # invalid mode
     return dataset_dict, class_dataset
+
+
+if __name__ == "__main__":
+    lda_dataset, lda_class = load_data(2, "LDA")
+    pca_dataset_10, pca_class_10 = load_data(10, "PCA")
+    pca_dataset_20, pca_class_20 = load_data(20, "PCA")
+    pca_dataset_30, pca_class_30 = load_data(30, "PCA")
+    with open("lda.dat", 'wb') as pickle_file:
+        pickle.dump((lda_dataset, lda_class), pickle_file)
+    with open("pca_10.dat", 'wb') as pickle_file:
+        pickle.dump((pca_dataset_10, pca_class_10), pickle_file)
+    with open("pca_20.dat", 'wb') as pickle_file:
+        pickle.dump((pca_dataset_20, pca_class_20), pickle_file)
+    with open("pca_30.dat", 'wb') as pickle_file:
+        pickle.dump((pca_dataset_30, pca_class_30), pickle_file)
+

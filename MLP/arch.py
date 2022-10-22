@@ -21,9 +21,11 @@ class MLP(torch.nn.Module):
             # torch.nn.Flatten(), # might be needed to pool everything into one layer
             # apply following function: y = x * A^T + b, where y is out, A - weights, b is bias
             # if an input is [60000, 2], then first param is num features, output is num features we get
-            torch.nn.Linear(2, 5),
+            torch.nn.Linear(2, 4),
             torch.nn.ReLU(),
-            torch.nn.Linear(5, 10),
+            torch.nn.Linear(4, 7),
+            torch.nn.ReLU(),
+            torch.nn.Linear(7, 10),
         )
 
     def forward(self, x):
@@ -49,9 +51,13 @@ class MLP10(torch.nn.Module):
             # torch.nn.Flatten(), # might be needed to pool everything into one layer
             # apply following function: y = x * A^T + b, where y is out, A - weights, b is bias
             # if an input is [60000, 2], then first param is num features, output is num features we get
-            torch.nn.Linear(10, 5),
+            torch.nn.Linear(10, 8),
             torch.nn.ReLU(),
-            torch.nn.Linear(5, 10),
+            torch.nn.Linear(8, 6),
+            torch.nn.ReLU(),
+            torch.nn.Linear(6, 8),
+            torch.nn.ReLU(),
+            torch.nn.Linear(6, 10),
         )
 
     def forward(self, x):
