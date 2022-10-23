@@ -67,7 +67,6 @@ def sklearn_classifier(dataset, dataset_classes):
 
 if __name__ == "__main__":
     torch.manual_seed(0)
-    lda_dataset, lda_class = utils.load_data(2, "LDA")
     with open('lda.dat', "rb") as f:
         lda_dataset_nn, lda_class_nn = pickle.load(f)
     with open('pca_10.dat', "rb") as f:
@@ -76,6 +75,15 @@ if __name__ == "__main__":
         pca_dataset_20_nn, pca_class_20_nn = pickle.load(f)
     with open('pca_30.dat', "rb") as f:
         pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
+
+    with torch.cuda.device(0):
+        train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
 
     train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
     train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
@@ -89,7 +97,8 @@ if __name__ == "__main__":
     with open('pca_20_numpy.dat', "rb") as f:
         pca_dataset_20, pca_class_20 = pickle.load(f)
     with open('pca_30_numpy.dat', "rb") as f:
-        pca_dataset_30, pca_class_30 = pickle.load(f)
+        pca_dataset_30, pca_class_30 = pickle.load(f)\
+
     print("LDA")
     sklearn_classifier(lda_dataset, lda_class)
     print("PCA10")
