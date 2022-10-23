@@ -8,11 +8,11 @@ def train_model(dataset, dset_class, model_class):
     # Define the loss function and optimizer
     mlp = model_class()
     loss_function = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(mlp.parameters(), lr=1e-5) #SGD was mentioned in the slides
-    epochs = 32
+    optimizer = torch.optim.SGD(mlp.parameters(), lr=3e-4) #SGD was mentioned in the slides
+    epochs = 768
     i = 0
     # split into batches
-    batch_size = 16
+    batch_size = 8
     splitted_batches = torch.split(dataset["train"], batch_size)
     splitted_classes = torch.split(dset_class["train"], batch_size)
     # train
@@ -55,12 +55,12 @@ if __name__ == "__main__":
     # lda_dataset, lda_class = utils.load_data(2, "LDA")
     with open('lda.dat', "rb") as f:
         lda_dataset, lda_class = pickle.load(f)
-    with open('pca_10.dat', "rb") as f:
+    '''with open('pca_10.dat', "rb") as f:
         pca_dataset_10, pca_class_10 = pickle.load(f)
     with open('pca_20.dat', "rb") as f:
         pca_dataset_20, pca_class_20 = pickle.load(f)
     with open('pca_30.dat', "rb") as f:
-        pca_dataset_30, pca_class_30 = pickle.load(f)
+        pca_dataset_30, pca_class_30 = pickle.load(f)'''
     
     # #pca_dataset_10, pca_class_10 = utils.load_data(10, "PCA")
     # with torch.cuda.device(0):
@@ -68,4 +68,4 @@ if __name__ == "__main__":
     # with torch.cuda.device(0):
     # train_model(pca_dataset_10, pca_class_10, arch.MLP10)
     # train_model(pca_dataset_20, pca_class_20, arch.MLP20)
-    train_model(pca_dataset_30, pca_class_30, arch.MLP30)
+    train_model(lda_dataset, lda_class, arch.MLP)
