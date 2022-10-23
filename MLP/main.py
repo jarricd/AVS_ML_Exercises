@@ -3,6 +3,8 @@ import arch
 import torch
 import pickle
 from torch.utils.tensorboard import SummaryWriter
+from sklearn.neural_network import MLPClassifier
+
 def train_model(dataset, dset_class, model_class):
     writer = SummaryWriter()
     # Define the loss function and optimizer
@@ -50,22 +52,49 @@ def train_model(dataset, dset_class, model_class):
     writer.close()
 
 
+def sklearn_classifier(dataset, dataset_classes):
+    mlp_classifier = MLPClassifier(random_state=69, max_iter=200, solver="sgd", hidden_layer_sizes=(3, 500))
+    mlp_classifier.fit(dataset["train"], dataset_classes["train"])
+    correct_classifications = 0
+    output = mlp_classifier.predict(dataset["test"])
+    for item, truth in zip(output, dataset_classes["test"]):
+        if item == truth:
+            correct_classifications += 1
+
+    accuracy = correct_classifications / len(dataset['test'])
+    print(f"Accuracy: {accuracy * 100}")
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
-    # lda_dataset, lda_class = utils.load_data(2, "LDA")
+    lda_dataset, lda_class = utils.load_data(2, "LDA")
     with open('lda.dat', "rb") as f:
-        lda_dataset, lda_class = pickle.load(f)
+        lda_dataset_nn, lda_class_nn = pickle.load(f)
     with open('pca_10.dat', "rb") as f:
-        pca_dataset_10, pca_class_10 = pickle.load(f)
+        pca_dataset_10_nn, pca_class_10_nn = pickle.load(f)
     with open('pca_20.dat', "rb") as f:
-        pca_dataset_20, pca_class_20 = pickle.load(f)
+        pca_dataset_20_nn, pca_class_20_nn = pickle.load(f)
     with open('pca_30.dat', "rb") as f:
+        pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
+
+    train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
+    train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
+    train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
+    train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
+
+    with open('lda_numpy.dat', "rb") as f:
+        lda_dataset, lda_class = pickle.load(f)
+    with open('pca_10_numpy.dat', "rb") as f:
+        pca_dataset_10, pca_class_10 = pickle.load(f)
+    with open('pca_20_numpy.dat', "rb") as f:
+        pca_dataset_20, pca_class_20 = pickle.load(f)
+    with open('pca_30_numpy.dat', "rb") as f:
         pca_dataset_30, pca_class_30 = pickle.load(f)
-    
-    # #pca_dataset_10, pca_class_10 = utils.load_data(10, "PCA")
-    # with torch.cuda.device(0):
-    #     train_lda_network(lda_dataset, lda_class)
-    # with torch.cuda.device(0):
-    # train_model(pca_dataset_10, pca_class_10, arch.MLP10)
-    # train_model(pca_dataset_20, pca_class_20, arch.MLP20)
-    train_model(pca_dataset_30, pca_class_30, arch.MLP30)
+    print("LDA")
+    sklearn_classifier(lda_dataset, lda_class)
+    print("PCA10")
+    sklearn_classifier(pca_dataset_10, pca_class_10)
+    print("PCA20")
+    sklearn_classifier(pca_dataset_20, pca_class_20)
+    print("PCA30")
+    sklearn_classifier(pca_dataset_30, pca_class_30)
