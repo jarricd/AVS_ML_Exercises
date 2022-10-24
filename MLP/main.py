@@ -1,8 +1,20 @@
+# ###################################
+# Group ID : 741
+# Members : Damian, Apostolos, Laurits, Kazim, Sebastian
+# Date : 19.10.2022
+# Lecture: 8 Multilayer perceptrons
+# Dependencies: pytorch, scikit-learn, numpy
+# Python version: 3.10
+# Functionality: Loads MNIST dataset to memory and then reduces its dimensions to 2 using PCA. Plots resulting dataset
+# and performs classifications on resulting data.
+# ###################################
+
 import arch
 import torch
 import pickle
 from torch.utils.tensorboard import SummaryWriter
 from sklearn.neural_network import MLPClassifier
+
 
 def train_model(dataset, dset_class, model_class):
     cuda = torch.device('cuda')
@@ -87,23 +99,23 @@ def sklearn_classifier(dataset, dataset_classes):
 
 if __name__ == "__main__":
     torch.manual_seed(0)
-    #with open('lda.dat', "rb") as f:
-     #   lda_dataset_nn, lda_class_nn = pickle.load(f)
-    # with open('pca_10.dat', "rb") as f:
-    #     pca_dataset_10_nn, pca_class_10_nn = pickle.load(f)
-    # with open('pca_20.dat', "rb") as f:
-    #    pca_dataset_20_nn, pca_class_20_nn = pickle.load(f)
-    # with open('pca_30.dat', "rb") as f:
-    #    pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
+    with open('lda.dat', "rb") as f:
+       lda_dataset_nn, lda_class_nn = pickle.load(f)
+    with open('pca_10.dat', "rb") as f:
+        pca_dataset_10_nn, pca_class_10_nn = pickle.load(f)
+    with open('pca_20.dat', "rb") as f:
+       pca_dataset_20_nn, pca_class_20_nn = pickle.load(f)
+    with open('pca_30.dat', "rb") as f:
+       pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
 
-    #with torch.cuda.device(0):
-     #   train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
-    # with torch.cuda.device(0):
-    #     train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
-    # with torch.cuda.device(0):
-    #     train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
-    # with torch.cuda.device(0):
-    #     train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
+    with torch.cuda.device(0):
+       train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
+    with torch.cuda.device(0):
+        train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
 
     with open('lda_numpy.dat', "rb") as f:
         lda_dataset, lda_class = pickle.load(f)
