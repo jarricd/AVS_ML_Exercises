@@ -17,7 +17,7 @@ from sklearn.neural_network import MLPClassifier
 
 
 def train_model(dataset, dset_class, model_class):
-    cuda = torch.device('cuda')
+    cuda = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     writer = SummaryWriter()
     # Define the loss function and optimizer
     mlp = model_class().to(cuda)
@@ -108,14 +108,10 @@ if __name__ == "__main__":
     with open('pca_30.dat', "rb") as f:
        pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
 
-    with torch.cuda.device(0):
-       train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
-    with torch.cuda.device(0):
-        train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
-    with torch.cuda.device(0):
-        train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
-    with torch.cuda.device(0):
-        train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
+    train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
+    train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
+    train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
+    train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
 
     with open('lda_numpy.dat', "rb") as f:
         lda_dataset, lda_class = pickle.load(f)
