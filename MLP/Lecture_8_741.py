@@ -12,18 +12,16 @@
 import arch
 import torch
 import pickle
-from torch.utils.tensorboard import SummaryWriter
 from sklearn.neural_network import MLPClassifier
 
 
-def train_model(dataset, dset_class, model_class):
+def train_model(dataset, dset_class, model_class, reduced_by):
     cuda = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    writer = SummaryWriter()
     # Define the loss function and optimizer
     mlp = model_class().to(cuda)
     loss_function = torch.nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(mlp.parameters(), lr=1e-4)
-    epochs = 45
+    epochs = 32
     i = 0
     # split into batches
     batch_size = 128
@@ -39,7 +37,6 @@ def train_model(dataset, dset_class, model_class):
             target_class_cuda = target_class.to(cuda)
             outputs = mlp(cuda_sample)
             loss = loss_function(outputs, target_class_cuda)
-            writer.add_scalar("Loss/train", loss, epoch)
             loss.backward()
             optimizer.step()
             current_loss += loss.item()
@@ -63,7 +60,7 @@ def train_model(dataset, dset_class, model_class):
                 if truth == classifications:
                     correct_guesses += 1
             accuracy = correct_guesses / len(dataset['test'])
-            print(f"Accuracy_{epoch}: {accuracy * 100}")
+            print(f"{reduced_by}: Accuracy_{epoch}: {accuracy * 100}")
 
     with torch.no_grad():
         correct_guesses = 0
@@ -79,9 +76,7 @@ def train_model(dataset, dset_class, model_class):
                 correct_guesses += 1
 
         accuracy = correct_guesses/len(dataset['test'])
-        print(f"Accuracy_lda1: {accuracy*100}")
-        writer.add_scalar("Accuracy", accuracy*100)
-    writer.close()
+        print(f"{reduced_by}: Accuracy: {accuracy*100}")
 
 
 def sklearn_classifier(dataset, dataset_classes):
@@ -108,10 +103,10 @@ if __name__ == "__main__":
     with open('pca_30.dat', "rb") as f:
        pca_dataset_30_nn, pca_class_30_nn = pickle.load(f)
 
-    train_model(lda_dataset_nn, lda_class_nn, arch.MLP)
-    train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10)
-    train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20)
-    train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30)
+    train_model(lda_dataset_nn, lda_class_nn, arch.MLP, "LDA")
+    train_model(pca_dataset_10_nn, pca_class_10_nn, arch.MLP10, "PCA10")
+    train_model(pca_dataset_20_nn, pca_class_20_nn, arch.MLP20, "PCA20")
+    train_model(pca_dataset_30_nn, pca_class_30_nn, arch.MLP30, "PCA30")
 
     with open('lda_numpy.dat', "rb") as f:
         lda_dataset, lda_class = pickle.load(f)

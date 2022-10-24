@@ -36,9 +36,7 @@ def load_data(n_dim, mode: str = "LDA", tensor=True):
         lda_train = LinearDiscriminantAnalysis(n_components=n_dim)
         lda_train.fit(np.array(dataset_dict["train"]), class_dataset["train"])
         reduced_train = lda_train.transform(dataset_dict["train"])
-        lda_test = LinearDiscriminantAnalysis(n_components=n_dim)
-        lda_test.fit(np.array(dataset_dict["test"]), class_dataset["test"])
-        reduced_test = lda_test.transform(dataset_dict["test"])
+        reduced_test = lda_train.transform(dataset_dict["test"])
 
         if tensor:
             dataset_dict["train"] = torch.from_numpy(reduced_train.astype(numpy.float32))
@@ -48,12 +46,10 @@ def load_data(n_dim, mode: str = "LDA", tensor=True):
             dataset_dict["test"] = reduced_test
 
     elif mode == "PCA":
-        lda_train = PCA(n_components=n_dim)
-        lda_train.fit(np.array(dataset_dict["train"]), class_dataset["train"])
-        reduced_train = lda_train.transform(dataset_dict["train"])
-        lda_test = PCA(n_components=n_dim)
-        lda_test.fit(np.array(dataset_dict["test"]), class_dataset["test"])
-        reduced_test = lda_test.transform(dataset_dict["test"])
+        PCA_train = PCA(n_components=n_dim)
+        PCA_train.fit(np.array(dataset_dict["train"]), class_dataset["train"])
+        reduced_train = PCA_train.transform(dataset_dict["train"])
+        reduced_test = PCA_train.transform(dataset_dict["test"])
 
         if tensor:
             dataset_dict["train"] = torch.from_numpy(reduced_train.astype(numpy.float32))
